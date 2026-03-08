@@ -35,10 +35,36 @@
             justify-content: center;
             box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
         }
+
+        /* Back Arrow Styling */
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8; /* slate-400 */
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            color: #0f172a; /* slate-900 */
+        }
+        .back-link i {
+            transition: transform 0.3s ease;
+        }
+        .back-link:hover i {
+            transform: translateX(-5px);
+        }
     </style>
 </head>
 <body class="text-slate-900 min-h-screen flex items-center justify-center p-6 relative">
     
+    <!-- Back to Home Arrow -->
+    <div class="fixed top-8 left-8 z-50">
+        <a href="/" class="back-link">
+            <i class="ph-bold ph-arrow-left text-xl"></i>
+            <span class="uppercase tracking-[0.2em] text-[10px] font-extrabold">Back to Home</span>
+        </a>
+    </div>
+
     <!-- Decorative Background Blobs (Monochrome) -->
     <div class="absolute -top-24 -left-24 w-96 h-96 bg-slate-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse pointer-events-none"></div>
     <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-zinc-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse pointer-events-none" style="animation-delay: 2s"></div>
