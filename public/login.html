@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Recur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .logo-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .input-glow:focus {
+            box-shadow: 0 0 20px rgba(15, 23, 42, 0.08);
+        }
+
+        .styled-r {
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+        }
+    </style>
+</head>
+<body class="text-slate-900 min-h-screen flex items-center justify-center p-6 relative">
+    
+    <!-- Decorative Background Blobs (Monochrome) -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-slate-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-zinc-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse pointer-events-none" style="animation-delay: 2s"></div>
+
+    <div class="w-full max-w-md glass-card rounded-[3rem] shadow-[0_30px_60px_-12px_rgba(0,0,0,0.1)] p-12 border border-white relative z-10 my-8">
+        
+        <!-- Logo Section -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center justify-center w-24 h-24 styled-r text-white rounded-[2.2rem] mb-6 rotate-3 hover:rotate-0 transition-all duration-500 cursor-default">
+                <span class="logo-font text-5xl font-extrabold tracking-tighter">R</span>
+            </div>
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 mb-2">Recur</h1>
+            <p class="text-slate-500 font-medium tracking-wide uppercase">Sign-In Portal</p>
+        </div>
+
+        <!-- Notification Area -->
+        <div id="message-area" class="hidden mb-6 p-4 rounded-2xl text-sm font-medium border text-center transition-all"></div>
+
+        <!-- Form Section -->
+        <form id="login-form" class="space-y-7">
+            <div class="space-y-2">
+                <label for="email" class="text-[10px] font-extrabold text-slate-400 ml-1 uppercase tracking-[0.2em]">Email Address</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
+                        <i class="ph-bold ph-envelope-simple text-xl"></i>
+                    </div>
+                    <input type="email" id="email" name="email" required
+                        class="block w-full pl-14 pr-5 py-4.5 bg-white/40 border border-slate-200 rounded-2xl focus:ring-0 focus:border-slate-900 focus:outline-none transition-all placeholder:text-slate-300 input-glow"
+                        placeholder="name@recur.io">
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label for="password" class="text-[10px] font-extrabold text-slate-400 ml-1 uppercase tracking-[0.2em]">Password</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
+                        <i class="ph-bold ph-lock-simple text-xl"></i>
+                    </div>
+                    <input type="password" id="password" name="password" required
+                        class="block w-full pl-14 pr-5 py-4.5 bg-white/40 border border-slate-200 rounded-2xl focus:ring-0 focus:border-slate-900 focus:outline-none transition-all placeholder:text-slate-300 input-glow"
+                        placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit" id="login-btn"
+                class="w-full bg-slate-900 hover:bg-black text-white font-bold py-5 rounded-2xl shadow-2xl shadow-slate-900/20 transition-all hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] text-lg mt-4 uppercase tracking-widest">
+                Sign In
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="mt-12 text-center">
+            <p class="text-slate-400 text-sm font-medium">
+                Need an account? 
+                <a href="/register" class="text-slate-900 font-bold hover:text-black transition-colors decoration-slate-900 decoration-2 underline-offset-8 hover:underline">Register now</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
