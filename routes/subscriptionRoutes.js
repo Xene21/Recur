@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const Subscription = require('../models/Subscriptions');
+const Subscription = require('../models/subscriptions');
 
-const auth = require('../middleware/authMiddleware.js'); // Middleware to protect routes
+const auth = require('../middleware/authMiddleware'); // Middleware to protect routes
 
 // Apply authentication middleware to all routes in this router
 router.use(auth);
