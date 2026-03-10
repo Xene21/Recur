@@ -12,13 +12,6 @@ const subscriptionSchema = new mongoose.Schema({
         required: [true, 'Price is required'],
         min: [0, 'Price cannot be negative'] // Prevents bad financial data
     },
-    currency: {
-        type: String,
-        required: true,
-        default: 'ngn', // Sets a sensible default
-        lowercase: true,
-        trim: true
-    },
     billingCycle: {
         type: String,
         required: true,
@@ -37,7 +30,7 @@ const subscriptionSchema = new mongoose.Schema({
         ref: 'User',
         required: true // The "glue" connecting the sub to the user
     },
-    startDate: {
+    renewalDate: {
         type: Date,
         required: [true, 'Please select a starting date'],
         default: Date.now // Defaults to today if not provided

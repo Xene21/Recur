@@ -3,11 +3,17 @@ const dotenv = require('dotenv');
 
 dotenv.config({path: './variables.env'});
 
-const authentication = (req,res,next) => {
-    const token = req.header('x-auth-token');
-    if(!token){
-        return res.status(401).json({message: 'No token, authorization denied'});
+const auth = (req,res,next) => {
+    
+    const token = req.header('x-auth-token') || req.cookies.authToken;
+    if (!token) {
+    // If the request is looking for a web page, redirect them
+    if (req.accepts('html')) {
+        return res.redirect('/login');
     }
+    // If it's a script/API request, send the JSON you wrote
+    return res.status(401).json({ message: 'No token, authorization denied' });
+}
 
     try{
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -19,4 +25,4 @@ const authentication = (req,res,next) => {
     }
 }
 
-module.exports = authentication;
+module.exports = auth;

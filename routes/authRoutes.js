@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({message:'Invalid Credentials'});
         }
 
-        const isMatch = user.comparePassword(password);
+        const isMatch = await user.comparePassword(password);
 
         if(!isMatch){
             return res.status(400).json({message:'Invalid Credentials'});
@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
-            res.json({ token });
+            res.status(200).json({ token: token });
         });
         
     }
@@ -56,6 +56,7 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try{
         const { fullName, email, password, username } = req.body;
+        console.log('Received registration data:', { fullName, email, password, username });
         if (!fullName || !email || !password || !username) {
             return res.status(400).send('All fields are required');
         }
@@ -65,7 +66,9 @@ router.post('/register', async (req, res) => {
             return res.status(400).send('Email or username already in use');
         }
 
+        console.log('hi')
         const newUser = await User.create({ fullName, email, password, username });
+        console.log(newUser);
         const payload = {
             user: {
                 id: newUser._id,
@@ -80,7 +83,8 @@ router.post('/register', async (req, res) => {
 
     }
     catch(err){
-        res.status(500).send('Server error');
+        console.error(err.message);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 

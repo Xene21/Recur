@@ -1,33 +1,24 @@
 const express = require('express');
 const router = express.Router();
+const User = require('../models/user');
+const Subscription = require('../models/Subscriptions');
 
-router.get('/Dashboard', (req, res) => {
-    res.render('Dashboard');
-});
+const auth = require('../middleware/authMiddleware.js'); // Middleware to protect routes
 
-router.get('/Subscription/new', (req, res) => {
-    res.render('Subscription/new');
-});
+// Apply authentication middleware to all routes in this router
+router.use(auth);
 
-router.post('/Subscription', (req, res) => {
-    // Handle subscription creation logic here
-    res.redirect('/Dashboard');
-});
+router.get('/dashboard', async (req, res) => {
+    try{
+    const userId = req.user.id;
+    const authenticatedUser = await User.findById(userId); // 
+    const userSubscriptions = await Subscription.find({ userId }); // Fetch subscriptions for the logged-in user
 
-router.get('/Subscription/:id', (req, res) => {
-    const subscriptionId = req.params.id;
-    // Fetch subscription details using subscriptionId and render the view
-    res.render('Subscription/show', { subscriptionId });
-});
-
-router.put('/Subscription/:id', (req, res) => {
-    const subscriptionId = req.params.id;
-}); // Handle subscription update logic here
-
-router.delete('/Subscription/:id', (req, res) => {
-    const subscriptionId = req.params.id;
-    // Handle subscription deletion logic here
-    res.redirect('/Dashboard');
-});
+    res.render('dashboard', { user: authenticatedUser, subscriptions: userSubscriptions });
+    } catch (error){
+        console.error('Error fetching dashboard data:', error);
+        res.status(500).send('An error occurred while loading the dashboard.');
+    }
+    });
 
 module.exports = router;
