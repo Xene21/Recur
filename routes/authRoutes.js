@@ -17,16 +17,19 @@ router.get('/register', (req, res) => {
 
 router.post('/login', async (req, res) => {
     try{
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).send('Email and password are required');
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).send('Username and password are required');
         }
-        const user = await User.findOne({email});
+        const user = await User.findOne({username}).select('+password');
+        console.log(user);
         if(!user){
             return res.status(400).json({message:'Invalid Credentials'});
         }
 
+        
         const isMatch = await user.comparePassword(password);
+        
 
         if(!isMatch){
             return res.status(400).json({message:'Invalid Credentials'});
@@ -36,19 +39,18 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user._id,
                 username: user.username,
-                role: user.role
             }
         };
 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
-            res.status(200).json({ token: token });
+            res.status(200).json({ token });
         });
         
     }
     catch(err){
         console.error(err);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
    
 });
