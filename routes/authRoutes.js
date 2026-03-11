@@ -90,4 +90,16 @@ router.post('/register', async (req, res) => {
     }
 });
 
+
+router.post('/logout', (req, res) => {
+    res.cookie('authToken', '', { 
+    httpOnly: true, 
+    expires: new Date(0), // This is the magic "exp" for logout
+    sameSite: 'Strict',
+    secure: process.env.NODE_ENV === 'production'
+  });
+
+  return res.status(200).json({ message: "Logout successful" });
+   
+});
 module.exports = router;

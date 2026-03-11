@@ -5,15 +5,15 @@
             <h1 class="text-4xl font-extrabold tracking-tighter">Welcome back, ${user.username}!</h1>
             <p class="text-slate-500">Here is what's happening with your subscriptions today.</p>
         </div>
-        <button class="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all flex items-center gap-2">
+        <a href='/subscriptions/new' class="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all flex items-center gap-2">
             <i class="ph-bold ph-plus"></i> Add New Subscription
-        </button>
+        </a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <div class="p-6 bg-white border border-slate-200 rounded-3xl">
             <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Monthly Spend</p>
-            <h2 class="text-3xl font-extrabold">$${subscriptions.reduce((total, sub) => total + sub.amount, 0).toFixed(2)}</h2>
+            <h2 class="text-3xl font-extrabold">#${subscriptions.reduce((total, sub) => total + sub.amount, 0).toFixed(2)}</h2>
         </div>
         <div class="p-6 bg-white border border-slate-200 rounded-3xl">
             <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Active Subs</p>

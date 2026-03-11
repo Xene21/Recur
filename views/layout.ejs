@@ -26,6 +26,27 @@
     </main>
 
     <%- include('footer') %>
+<script>
+    const logoutBtn = document.getElementById('logout-btn');
 
+
+logoutBtn.addEventListener('click', async () => {
+    try {
+        const response = await fetch('/logout', {
+            method: 'POST'
+        });
+        if (response.ok) {
+            window.location.href = '/login';
+        } else {
+            alert('Logout failed');
+        }
+
+    } catch (error) {
+        console.error('Error during logout:', error);
+      
+    }
+});
+    
+</script>
 </body>
 </html>

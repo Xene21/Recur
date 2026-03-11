@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recur | Subscription Manager</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f0f2f5;
+            padding: 2rem;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        h2 { margin-top: 0; font-size: 1.25rem; color: #1a1a1a; }
+        .grid-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-group { margin-bottom: 1rem; }
+        .full-width { grid-column: span 2; }
+        label { display: block; margin-bottom: 0.4rem; font-size: 0.85rem; font-weight: 600; color: #555; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        button:hover { background-color: #1d4ed8; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        th { background-color: #f8fafc; font-size: 0.8rem; text-transform: uppercase; color: #64748b; }
+        tr:last-child td { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div style="margin-bottom: 1rem;">
+        <a href="/dashboard" style="text-decoration: none; color: #64748b; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; font-weight: 500;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg>
+            Back to Dashboard
+        </a>
+    </div>
+    <div class="card">
+        <h2>Add Subscription</h2>
+        <form id="recurForm" class="grid-form">
+            <div class="form-group full-width">
+                <label>Service Name</label>
+                <input name="service" type="text" id="service" placeholder="e.g. Spotify" required>
+            </div>
+
+            <div class="form-group">
+                <label>Price (#)</label>
+                <input name="price" type="number" id="price" step="0.01" placeholder="0.00" required>
+            </div>
+
+            <div class="form-group">
+                <label>Billing Cycle</label>
+                <select name="cycle" id="cycle">
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly">Quarterly</option>
+                    <option value="Yearly">Yearly</option>
+                    <option value="Weekly">Weekly</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select name="category" id="category">
+                    <option value="entertainment">Entertainment</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="software">Software</option>
+                    <option value="health">Health</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Next Renewal</label>
+                <input name="renewalDate" type="date" id="renewalDate" required>
+            </div>
+
+            <button type="submit" class="full-width">Add to List</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Added Subscriptions</h2>
+        <table id="subTable">
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Price</th>
+                    <th>Cycle</th>
+                    <th>Category</th>
+                    <th>Renewal</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('recurForm');
+    const tableBody = document.querySelector('#subTable tbody');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get values
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const service = data.service;
+        const price = data.price;
+        const cycle = data.cycle;
+        const category = data.category || 'General';
+        const renewalDate = data.renewalDate;
+
+        // Create table row
+        const row = `<tr>
+            <td><strong>${service}</strong></td>
+            <td>#${parseFloat(price).toFixed(2)}</td>
+            <td>${cycle}</td>
+            <td>${category}</td>
+            <td>${renewalDate}</td>
+        </tr>`;
+
+        // Append to table
+        tableBody.innerHTML += row;
+
+        try{
+            // Send data to server
+            fetch('/subscriptions/new', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ service, price, cycle, category, renewalDate })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+        catch(error){
+            console.error('Error:', error);
+        }
+
+        // Reset form
+        form.reset();
+    });
+</script>
+
+</body>
+</html>

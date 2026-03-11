@@ -22,6 +22,8 @@ const subscriptionSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
+        lowercase: true,
+        trim: true,
         enum: ['entertainment', 'utilities', 'software', 'health', 'other'],
         default: 'other'
     },
