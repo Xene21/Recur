@@ -22,11 +22,12 @@ router.get('/dashboard', async (req, res) => {
     }
     });
 
-router.get('/allSubscriptions', async (req, res) => {
+router.get('/subscriptions', async (req, res) => {
     try{
         const userId = req.user.id;
         const userSubscriptions = await Subscription.find({ userId }); // Fetch subscriptions for the logged-in user
-        //res.render('subscriptions', { subscriptions: userSubscriptions });
+        
+        res.render('subscriptions', { subscriptions: userSubscriptions });
     } catch (error){
         console.error('Error fetching subscriptions:', error);
         res.status(500).send('An error occurred while loading the subscriptions.');
