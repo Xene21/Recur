@@ -36,15 +36,24 @@ registerForm.addEventListener('submit', async (e) => {
     try{
         const result = await postData('/register', data);
         console.log(result);
+        
+        const messageArea = document.getElementById('message-area');
     
         if(result.token){
-            alert('Registration successful!');
+            messageArea.className = 'mb-6 p-4 rounded-2xl text-sm font-medium border text-center transition-all bg-emerald-50 text-emerald-600 border-emerald-200';
+            messageArea.innerHTML = '<div class="flex items-center justify-center gap-2"><i class="ph-bold ph-check-circle text-lg"></i><span>Registration successful! Redirecting...</span></div>';
+            
             document.cookie = `authToken=${result.token}; path=/; max-age=604800; SameSite=Lax`;
-            window.location.href = '/dashboard';
+            
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1000); // Give user a brief moment to read the success message
         }
 
     } catch (error) {
-        alert('Registration failed: ' + error.message);
+        const messageArea = document.getElementById('message-area');
+        messageArea.className = 'mb-6 p-4 rounded-2xl text-sm font-medium border text-center transition-all bg-rose-50 text-rose-600 border-rose-200';
+        messageArea.innerHTML = `<div class="flex items-center justify-center gap-2"><i class="ph-bold ph-warning-circle text-lg"></i><span>Registration failed</span></div>`;
     }
 
 })
