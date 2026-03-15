@@ -21,29 +21,76 @@
             </div>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="subscriptionGrid">
-            ${Array.isArray(subscriptions) && subscriptions.length > 0 ? subscriptions.map(subscription => `
-                <div class="subscription-card bg-white rounded-2xl border border-slate-100 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all">
-                    <div class="flex items-center gap-4">
+        <div class="flex flex-col gap-4" id="subscriptionGrid">
+            ${Array.isArray(subscriptions) && subscriptions.length > 0 ? subscriptions.map(subscription => {
+                const initial = subscription.providerName ? subscription.providerName.charAt(0).toUpperCase() : 'S';
+                const price = typeof subscription.amount === 'number' ? subscription.amount.toFixed(2) : subscription.amount;
+                const formattedDate = new Date(subscription.renewalDate).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric'
+                });
+                
+                return `
+                <div onclick="window.location.href='/subscriptions/${subscription._id}'" class="subscription-card cursor-pointer group bg-white rounded-3xl border border-slate-200 p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all relative overflow-hidden">
+                    
+                    <!-- Decorative hover accent -->
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-slate-900 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                    <div class="flex items-center gap-6">
+                        <!-- Icon/Initial -->
                         ${subscription.icon ? 
-                            `<img src="${subscription.icon}" alt="${subscription.name}" class="w-12 h-12 rounded-xl object-cover bg-slate-100">` : 
-                            `<div class="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center text-white font-bold text-lg">
-                                ${subscription.providerName.charAt(0).toUpperCase()}
+                            `<img src="${subscription.icon}" alt="${subscription.providerName}" class="w-16 h-16 rounded-2xl object-cover bg-slate-50 border border-slate-100 shadow-sm shrink-0">` 
+                            : 
+                            `<div class="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-900 font-extrabold text-2xl shadow-sm shrink-0">
+                                ${initial}
                             </div>`
                         }
+                        
+                        <!-- Info -->
                         <div>
-                            <h2 class="sub-name text-lg font-bold text-slate-900 leading-tight">${subscription.providerName}</h2>
-                            <p class="text-slate-500 text-sm font-medium">${subscription.category || 'Subscription'}</p>
+                            <h2 class="sub-name text-xl font-bold text-slate-900 mb-1">${subscription.providerName}</h2>
+                            <div class="flex items-center gap-3 text-sm">
+                                <span class="px-2 py-0.5 bg-slate-100 text-slate-500 font-bold uppercase tracking-widest text-[10px] rounded-md border border-slate-200">
+                                    ${subscription.category || 'Service'}
+                                </span>
+                                <span class="text-slate-400 font-medium flex items-center gap-1">
+                                    <i class="ph-bold ph-arrows-clockwise"></i> ${subscription.billingCycle || 'Monthly'}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between mt-2 pt-4 border-t border-slate-50">
-                         <span class="text-xl font-black text-slate-900">#${subscription.amount || '0.00'}</span>
-                         <a href="/subscriptions/${subscription._id}" class="text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors">Details</a>
+
+                    <div class="flex items-center justify-between sm:justify-end gap-8 border-t sm:border-t-0 border-slate-100 pt-4 sm:pt-0">
+                        <!-- Renewal Date Block -->
+                        <div class="text-left sm:text-right hidden md:block">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Renews On</p>
+                            <p class="text-slate-700 font-medium">${formattedDate}</p>
+                        </div>
+                        
+                        <!-- Price Block -->
+                        <div class="text-right">
+                             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Cost</p>
+                             <div class="flex items-baseline justify-end gap-1">
+                                <span class="text-slate-400 font-bold">#</span>
+                                <span class="text-2xl font-black text-slate-900">${price}</span>
+                             </div>
+                        </div>
+
+                        <!-- Action Arrow -->
+                        <div class="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white group-hover:border-slate-900 transition-all ml-2 shrink-0">
+                            <i class="ph-bold ph-caret-right"></i>
+                        </div>
                     </div>
                 </div>
-            `).join('') : `
-                <div class="col-span-full py-20 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-                    <p class="text-slate-400 font-medium font-bold">No subscriptions yet.</p>
+            `}).join('') : `
+                <div class="py-20 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center border border-slate-100 shadow-sm mx-auto mb-6 text-slate-300">
+                        <i class="ph-bold ph-ghost text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">No subscriptions found</h3>
+                    <p class="text-slate-500 font-medium mb-8">You haven't added any subscriptions to track yet.</p>
+                    <a href="/subscriptions/new" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-sm">
+                        <i class="ph-bold ph-plus"></i> Add Your First Subscription
+                    </a>
                 </div>
             `}
         </div>
@@ -59,7 +106,7 @@
                 cards.forEach(card => {
                     const name = card.querySelector('.sub-name').textContent.toLowerCase();
                     if (name.includes(query)) {
-                        card.style.display = '';
+                        card.style.display = 'flex'; // Changed to flex since we use flex layout for cards
                     } else {
                         card.style.display = 'none';
                     }

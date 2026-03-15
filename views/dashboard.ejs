@@ -43,12 +43,17 @@
                 <tbody class="divide-y divide-slate-100">
                     ${(typeof subscriptions !== 'undefined' && subscriptions.length > 0) 
                         ? subscriptions.map(sub => `
-                            <tr class="hover:bg-slate-50 transition-colors">
+                            <tr onclick="window.location.href='/subscriptions/${sub.id}'" class="cursor-pointer hover:bg-slate-50 transition-colors">
                                 <td class="px-8 py-6 font-bold">${sub.providerName}</td>
                                 <td class="px-8 py-6 text-slate-500">#${sub.amount}</td>
                                 <td class="px-8 py-6 text-slate-500">${new Date(sub.renewalDate).toLocaleDateString()}</td>
-                                <td class="px-8 py-6 text-right">
-                                    <button class="text-slate-400 hover:text-red-500 transition-colors">
+                                <td class="px-8 py-6 text-right relative z-10">
+                                    <button 
+                                        id="delete-btn-${sub.id}"
+                                        data-id="${sub.id}"
+                                        data-name="${sub.providerName}"
+                                        onclick="event.stopPropagation(); // user script can handle the rest"
+                                        class="text-slate-400 hover:text-red-500 transition-colors delete-subscription-btn">
                                         <i class="ph-bold ph-trash"></i>
                                     </button>
                                 </td>
@@ -65,9 +70,112 @@
                 </tbody>
             </table>
         </div>
+        </div>
+    </div>
+
+    <!-- Custom Delete Modal Overlay -->
+    <div id="delete-modal-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <!-- Modal Card -->
+        <div id="delete-modal-card" class="bg-white rounded-[2rem] p-8 max-w-sm w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="w-16 h-16 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mb-6 border border-red-100 mx-auto">
+                <i class="ph-bold ph-warning text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 text-center mb-2">Delete Subscription?</h3>
+            <p class="text-slate-500 text-center mb-8">
+                Are you sure you want to permanently remove <strong id="delete-modal-provider-name" class="text-slate-800"></strong>? This action cannot be undone.
+            </p>
+            <div class="flex gap-4">
+                <button id="cancel-delete-btn" class="flex-1 py-3 px-4 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 transition-all">
+                    Cancel
+                </button>
+                <button id="confirm-delete-btn" class="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 shadow-md transition-all flex justify-center items-center gap-2">
+                    Delete
+                </button>
+            </div>
+        </div>
     </div>
   `
 %>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modalBackdrop = document.getElementById('delete-modal-backdrop');
+        const modalCard = document.getElementById('delete-modal-card');
+        const cancelBtn = document.getElementById('cancel-delete-btn');
+        const confirmBtn = document.getElementById('confirm-delete-btn');
+        const providerNameSpan = document.getElementById('delete-modal-provider-name');
+        
+        let subIdToDelete = null;
+
+        const openModal = () => {
+            modalBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+            modalCard.classList.remove('scale-95');
+        };
+
+        const closeModal = () => {
+            modalBackdrop.classList.add('opacity-0', 'pointer-events-none');
+            modalCard.classList.add('scale-95');
+            subIdToDelete = null;
+        };
+
+        document.querySelectorAll('.delete-subscription-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation(); // Double check to keep row from navigating
+                subIdToDelete = button.getAttribute('data-id');
+                providerNameSpan.textContent = button.getAttribute('data-name');
+                openModal();
+            });
+        });
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', closeModal);
+        }
+
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', async () => {
+                if (!subIdToDelete) return;
+
+                // Provide visual feedback
+                const originalText = confirmBtn.innerHTML;
+                confirmBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Deleting...';
+                confirmBtn.disabled = true;
+                cancelBtn.disabled = true;
+
+                try {
+                    const response = await fetch(`/subscriptions/${subIdToDelete}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        // Reload the page to remove the deleted row from the table
+                        window.location.reload();
+                    } else {
+                        const data = await response.json();
+                        alert('Error deleting subscription: ' + (data.message || 'Unknown error'));
+                        confirmBtn.innerHTML = originalText;
+                        confirmBtn.disabled = false;
+                        cancelBtn.disabled = false;
+                        closeModal();
+                    }
+                } catch (error) {
+                    console.error('Failed to delete subscription:', error);
+                    alert('Connection error. Please try again later.');
+                    confirmBtn.innerHTML = originalText;
+                    confirmBtn.disabled = false;
+                    cancelBtn.disabled = false;
+                    closeModal();
+                }
+            });
+        }
+
+        // Optional: Close modal if clicking on the backdrop
+        modalBackdrop.addEventListener('click', (e) => {
+            if (e.target === modalBackdrop) {
+                closeModal();
+            }
+        });
+    });
+</script>
 
 <%# STEP 2: Wrap this content in the layout frame %>
 <%- include('layout') %>

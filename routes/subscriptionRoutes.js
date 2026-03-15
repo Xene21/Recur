@@ -60,6 +60,28 @@ router.post('/subscriptions/new', async (req, res) => {
 
     }
 });
-router.get('/subscriptions/:id', async (req, res) => {});
-
+router.get('/subscriptions/:id', async (req, res) => {
+    const subscriptionId = req.params.id;
+    const userId = req.user.id;
+    const subscription = await Subscription.findOne({ _id: subscriptionId, userId });
+    if(!subscription){
+        return res.status(404).json({ message: 'Subscription not found' });
+    }
+    res.render('details', { subscription });
+});
+router.delete('/subscriptions/:id', async (req, res) => {
+    try{
+        const userId = req.user.id;
+        const subscriptionId = req.params.id;
+        const subscription = await Subscription.findOne({ _id: subscriptionId, userId });
+        if(!subscription){
+            return res.status(404).json({ message: 'Subscription not found' });
+        }
+        await subscription.deleteOne();
+        res.status(200).json({ message: 'Subscription deleted successfully' });
+    } catch (error){
+        console.error('Error deleting subscription:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 module.exports = router;
