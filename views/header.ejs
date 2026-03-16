@@ -7,8 +7,8 @@
             <span class="text-2xl font-extrabold tracking-tighter logo-font">Recur</span>
         </div>
         <div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-slate-500">
-            <a href="/dashboard" class="hover:text-slate-900 transition-colors">Dashboard</a>
-            <a href="/subscriptions" class="hover:text-slate-900 transition-colors">My Subs</a>
+            <a href="/dashboard" class="px-5 py-2 rounded-full transition-all duration-300 <%= typeof path !== 'undefined' && path === '/dashboard' ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md shadow-slate-900/20 border border-slate-700/50' : 'hover:text-slate-900 hover:bg-slate-200/50' %>">Dashboard</a>
+            <a href="/subscriptions" class="px-5 py-2 rounded-full transition-all duration-300 <%= typeof path !== 'undefined' && path === '/subscriptions' ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md shadow-slate-900/20 border border-slate-700/50' : 'hover:text-slate-900 hover:bg-slate-200/50' %>">My Subs</a>
             <button id="logout-btn" class="px-6 py-2 border-2 border-slate-900 text-slate-900 rounded-full hover:bg-slate-900 hover:text-white transition-all">Logout</button>
         </div>
     </div>

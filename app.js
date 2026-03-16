@@ -21,6 +21,13 @@ app.use(express.urlencoded({ extended: true }));
 
 //Supporting EJS
 app.set('view engine', 'ejs');
+
+// Make req.path available to all views
+app.use((req, res, next) => {
+  res.locals.path = req.path;
+  next();
+});
+
 // 2. Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
